@@ -1,0 +1,88 @@
+body {
+    background: #f5f5f5;
+}
+
+.header {
+    padding: 4px;
+}
+
+.header .shield {
+    margin-right: 6px;
+}
+
+.content {
+    display: flex;
+    padding: 20px;
+    min-width: 100vw;
+    min-height: 100vh;
+}
+
+.content .column-1 {
+    flex: 1 1 45%;
+    padding: 12px;
+
+}
+
+.content .column-2 {
+    flex: 1 1 45%;
+    padding: 12px;
+}
+
+.error-state {
+    background: red;
+}
+
+.jobs {
+    width: 100%;
+}
+
+.fa, .fas {
+    color: white;
+}
+
+.material-container {
+    flex: 1 1 auto;
+    min-height: 120px;
+    margin: 12px;
+
+    -webkit-box-shadow: -1px 1px 3px 1px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: -1px 1px 3px 1px rgba(0, 0, 0, 0.75);
+    box-shadow: -1px 1px 3px 1px rgba(0, 0, 0, 0.75);
+
+    display: flex;
+}
+
+.material-container__logo {
+    flex: 0 0 120px;
+    background: #f2443d;
+
+    font-size: 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.material-container__logo.check-okay {
+    background: #3acb7d;
+
+}
+
+.material-container__name {
+    flex: 1 1 auto;
+
+    font-size: 24px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.material-container.build-state {
+
+}
+
+.material-container.job {
+
+}

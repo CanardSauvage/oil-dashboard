@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>oil.js Dashboard</title>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fetch/2.0.4/fetch.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+    <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css"/>
+
+    <!-- BOOTSTRAP MATERIAL cf. https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/examples/ -->
+    <script src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="//unpkg.com/popper.js@1.12.6/dist/umd/popper.js"></script>
+    <script src="//unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"></script>
+    <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>-->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+    <link rel="stylesheet" href="//unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css">
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.13/css/all.css">
+
+    <script>
+        function reload() {
+            try {
+                $('.jobs').empty();
+                $('.kpis').empty();
+
+
+                fetch('/api/browserstack')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (myJson) {
+                        let jobs = myJson.jobs;
+                        for (let job of jobs) {
+                            addJob(job);
+                        }
+                    });
+
+                fetch('/api/build')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (myJson) {
+
+                        if (myJson.result === 'SUCCESS') {
+                            $('.kpis').append(`<div class="material-container build-state"><div class="material-container__logo check-okay"><i class="fa fa-check"></i></div><div class="material-container__name">OIL.js build</div></div>`);
+                        } else {
+                            $('.kpis').append(`<div class="material-container build-state"><div class="material-container__logo"><i class="fas fa-exclamation-circle"></i></div><div class="material-container__name">OIL.js build</div></div>`);
+                        }
+                    });
+            }
+            catch (e) {
+                console.error(e);
+                setError();
+            }
+        }
+
+        function addJob(job) {
+            let name = job.name;
+            let state = job.color; // notbuilt, red, blue
+            if (state !== 'blue') {
+                $('.jobs').append(`<div class="material-container job"><div class="material-container__logo"><i class="fas fa-exclamation-circle"></i></div><div class="material-container__name">${name}</div></div>`);
+            }
+        }
+
+        function setError() {
+            $('body').addClass('error-state');
+        }
+
+        function setOk() {
+            $('body').removeClass('error-state');
+
+        }
+
+        function addShields() {
+            let header = $('.header');
+            header.empty();
+
+            window.setTimeout(function () {
+                header.append(`<img class="shield" src="//img.shields.io/github/release/as-ideas/oil.svg?style=for-the-badge">`);
+                header.append(`<img class="shield" src="//img.shields.io/github/stars/as-ideas/oil.svg?style=for-the-badge">`);
+                header.append(`<img class="shield" src="//img.shields.io/github/issues-raw/as-ideas/oil.svg?style=for-the-badge">`);
+                header.append(`<img class="shield" src="//img.shields.io/github/issues-pr/as-ideas/oil.svg?style=for-the-badge">`);
+                header.append(`<img class="shield" src="//img.badgesize.io/https://oil.axelspringer.com/latest/oil.min.js?compression=gzip&style=for-the-badge">`);
+            }, 500);
+
+        }
+
+        $(function () {
+            reload();
+            addShields();
+            window.setInterval(reload, 120 * 1000);
+            window.setInterval(addShields, 600 * 1000);
+        });
+
+    </script>
+</head>
+
+<body role="document">
+<div class="header">
+</div>
+<div id="content" class="content">
+    <div class="column-1">
+        <h1>Selenium</h1>
+        <div class="jobs"></div>
+    </div>
+    <div class="column-2">
+        <h1>State</h1>
+        <div class="kpis"></div>
+    </div>
+</div>
+</body>
+</html>
