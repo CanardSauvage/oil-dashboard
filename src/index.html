@@ -30,6 +30,7 @@
             try {
                 $('.jobs').empty();
                 $('.kpis').empty();
+                $('.state').empty();
 
 
                 fetch('/api/browserstack')
@@ -43,23 +44,68 @@
                         }
                     });
 
-                fetch('/api/build')
+                fetch('/api/build/oil')
                     .then(function (response) {
                         return response.json();
                     })
                     .then(function (myJson) {
-
                         if (myJson.result === 'SUCCESS') {
-                            $('.kpis').append(`<div class="material-container build-state"><div class="material-container__logo check-okay"><i class="fa fa-check"></i></div><div class="material-container__name">OIL.js build</div></div>`);
+                            $('.kpis').append(successBox('OIL.js build', 'build-state'));
                         } else {
-                            $('.kpis').append(`<div class="material-container build-state"><div class="material-container__logo"><i class="fas fa-exclamation-circle"></i></div><div class="material-container__name">OIL.js build</div></div>`);
+                            $('.kpis').append(errorBox('OIL.js build', 'build-state'));
                         }
                     });
+
+                fetch('/api/build/oil-backend')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (myJson) {
+                        if (myJson.result === 'SUCCESS') {
+                            $('.kpis').append(successBox('OIL-Backend build', 'build-state'));
+                        } else {
+                            $('.kpis').append(errorBox('OIL-Backend build', 'build-state'));
+                        }
+                    });
+
+                fetch('/api/state/oil')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (response) {
+                        if (response.ok) {
+                            $('.state').append(successBox('oil.axelspringer.com', 'reachable-state'));
+                        } else {
+                            $('.state').append(errorBox('oil.axelspringer.com', 'reachable-state'));
+                        }
+                    });
+
+                fetch('/api/state/oil-backend')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (response) {
+                        if (response.ok) {
+                            $('.state').append(successBox('OIL-Backend reachable', 'reachable-state'));
+                        } else {
+                            $('.state').append(errorBox('OIL-Backend reachable', 'reachable-state'));
+                        }
+                    });
+
+
             }
             catch (e) {
                 console.error(e);
                 setError();
             }
+        }
+
+        function successBox(text, cssClass) {
+            return `<div class="material-container ${cssClass}"><div class="material-container__logo check-okay"><i class="fa fa-check"></i></div><div class="material-container__name">${text}</div></div>`
+        }
+
+        function errorBox(text, cssClass) {
+            return `<div class="material-container ${cssClass}"><div class="material-container__logo"><i class="fas fa-exclamation-circle"></i></div><div class="material-container__name">${text}</div></div>`
         }
 
         function addJob(job) {
@@ -112,8 +158,10 @@
         <div class="jobs"></div>
     </div>
     <div class="column-2">
-        <h1>State</h1>
+        <h1>Build</h1>
         <div class="kpis"></div>
+        <h1>State</h1>
+        <div class="state"></div>
     </div>
 </div>
 </body>

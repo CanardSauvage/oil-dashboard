@@ -9,7 +9,10 @@ app.use(express.static(__dirname + '/src'));
 
 
 let browserstackJobs = [];
-let lastBuild = {};
+let lastBuildOil = {};
+let lastBuildOilBackend = {};
+let lastStateOil = {};
+let lastStateOilBackend = {};
 
 
 function loadBrowserstackJobs() {
@@ -28,14 +31,41 @@ function loadLastBuildJobs() {
             return response.json();
         })
         .then((myJson) => {
-            lastBuild = myJson;
+            lastBuildOil = myJson;
         });
+    fetch('https://jenkins.ipool.asideas.de/view/OIL%20Project/job/OIL-BACKEND-Build/lastBuild/api/json?tree=result,timestamp')
+        .then((response) => {
+            return response.json();
+        })
+        .then((myJson) => {
+            lastBuildOilBackend = myJson;
+        });
+}
+
+function loadLastState() {
+    fetch('https://oil-backend.herokuapp.com/oil/api/userViewLocales/enEN_01')
+        .then((response) => {
+            if (response.ok) {
+                lastStateOilBackend = {ok: true}
+            } else {
+                lastStateOilBackend = {error: true}
+            }
+        })
+    fetch('https://oil.axelspringer.com')
+        .then((response) => {
+            if (response.ok) {
+                lastStateOil = {ok: true}
+            } else {
+                lastStateOil = {error: true}
+            }
+        })
 }
 
 
 function refresh() {
     loadBrowserstackJobs();
     loadLastBuildJobs();
+    loadLastState();
 }
 
 refresh();
@@ -49,9 +79,27 @@ app.route('/api/browserstack')
     );
 
 
-app.route('/api/build')
+app.route('/api/build/oil')
     .get((req, res) => {
-            res.json(lastBuild);
+            res.json(lastBuildOil);
+        }
+    );
+
+app.route('/api/build/oil-backend')
+    .get((req, res) => {
+            res.json(lastBuildOilBackend);
+        }
+    );
+
+app.route('/api/state/oil')
+    .get((req, res) => {
+            res.json(lastStateOil);
+        }
+    );
+
+app.route('/api/state/oil-backend')
+    .get((req, res) => {
+            res.json(lastStateOilBackend);
         }
     );
 
